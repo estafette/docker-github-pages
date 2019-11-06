@@ -1,0 +1,61 @@
+builder:
+  track: dev
+
+labels:
+  app-group: estafette-various
+  team: estafette-team
+  language: docker
+
+stages:
+  bake:
+    image: extensions/docker:dev
+    action: build
+    container: github-pages
+    repositories:
+    - estafette
+
+  push-to-docker-hub:
+    image: extensions/docker:dev
+    action: push
+    container: github-pages
+    repositories:
+    - estafette
+
+releases:
+  dev:
+    triggers:
+    - pipeline:
+        name: self
+        branch: .+
+    stages:
+      tag-container-image:
+        image: extensions/docker:dev
+        action: tag
+        container: github-pages
+        repositories:
+        - estafette
+        tags:
+        - dev
+
+  beta:
+    stages:
+      tag-container-image:
+        image: extensions/docker:dev
+        action: tag
+        container: github-pages
+        repositories:
+        - estafette
+        tags:
+        - beta
+
+  stable:
+    stages:
+      tag-container-image:
+        image: extensions/docker:dev
+        action: tag
+        container: github-pages
+        repositories:
+        - estafette
+        tags:
+        - stable
+        - latest
